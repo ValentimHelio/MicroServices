@@ -1,8 +1,10 @@
 ﻿using Catalog.API.Entities;
 using Catalog.API.Repositories;
+using CsvHelper.Configuration.Attributes;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Threading.Tasks;
 
 namespace Catalog.API.Controllers
@@ -55,5 +57,22 @@ namespace Catalog.API.Controllers
             await _repository.CreateProduct(product);
             return CreatedAtRoute("Getproduct", new { id = product.Id }, product);
         }
+
+        [HttpPut]
+        [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        public async Task<IActionResult> UpdateProduct([FromBody] Product product)
+        {
+            if (product is null) { return BadRequest("Invalid product"); }
+            return Ok(await _repository.UpdateProduct(product));
+        }
+
+        [HttpDelete("{id:length(24)}", Name = "DeleteProduct")]
+        [ProducesResponseType(typeof(Product), StatusCodes.Status200OK)]
+        public async Task<IActionResult> DeleteProduct(string id)
+        {
+            return Ok(await _repository.DeleteProduct(id));
+        }
+
     }
 }
