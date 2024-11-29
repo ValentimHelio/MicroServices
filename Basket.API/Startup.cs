@@ -26,6 +26,10 @@ namespace Basket.API
         public void ConfigureServices(IServiceCollection services)
         {
 
+            services.AddStackExchangeRedisCache(option =>
+            {
+                option.Configuration = Configuration.GetValue<string>("CacheSettings:ConnectionString");
+            });
             services.AddControllers();
             services.AddSwaggerGen(c =>
             {
