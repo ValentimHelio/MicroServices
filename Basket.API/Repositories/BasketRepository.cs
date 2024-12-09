@@ -1,6 +1,8 @@
 ﻿using Basket.API.Entities;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.Extensions.Caching.Distributed;
 using System;
+using System.Text.Json;
 using System.Threading.Tasks;
 
 namespace Basket.API.Repositories
@@ -16,17 +18,22 @@ namespace Basket.API.Repositories
 
         public async Task<ShoppingCart> GetBasket(string userName)
         {
-            throw new System.NotImplementedException();
+            var basket = await _redisCache.GetStringAsync(userName);
+
+            if (String.IsNullOrEmpty(basket)) { return null; }
+
+            return JsonSerializer.Deserialize<ShoppingCart>(basket);
         }
 
         public async Task<ShoppingCart> UpdateBasked(ShoppingCart basked)
         {
-            throw new System.NotImplementedException();
+            await _redisCache.SetStringAsync(basked.UserName, JsonSerializer.Serialize(basked));
+            return await GetBasket(basked.UserName);
         }
 
         public async Task DeleteBasket(string userName)
         {
-            throw new System.NotImplementedException();
+            await _redisCache.RemoveAsync(userName);
         }
     }
 }
